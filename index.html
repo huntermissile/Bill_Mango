@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mango Revenue Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #e8f5e9);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 90%;
+      width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #1b5e20;
+    }
+    input, button {
+      width: 100%;
+      padding: 14px 16px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #43a047;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    button:hover {
+      background-color: #388e3c;
+      transform: scale(1.03);
+    }
+    .result {
+      background-color: #f1f8e9;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 30px;
+      font-size: 16px;
+    }
+    .input-set {
+      padding: 20px;
+      margin-top: 30px;
+      background-color: #f9fbe7;
+      border-radius: 14px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+    }
+    .grand-total-box {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e8f5e9;
+      border: 2px dashed #2e7d32;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 20px;
+      color: #1b5e20;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+        margin: 20px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      input, button {
+        font-size: 14px;
+      }
+    }
+    @media print {
+      input, button, #advanceSection, .container > h1 {
+        display: none !important;
+      }
+      .result {
+        background-color: transparent;
+        box-shadow: none;
+      }
+      .input-set {
+        page-break-inside: avoid;
+        margin-bottom: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Mango Revenue Calculator</h1>
+    <label for="sets">Number of Lots:</label>
+    <input type="number" id="sets" min="1">
+    <button onclick="generateInputs()">Generate Input Fields</button>
+    <form id="inputForm"></form>
+    <div id="advanceSection" style="display:none">
+      <label for="advance">Advance:</label>
+      <input type="number" id="advance" value="0">
+      <button type="button" onclick="calculateRevenue()">Calculate Total Revenue</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function generateInputs() {
+      const form = document.getElementById('inputForm');
+      form.innerHTML = '';
+      const sets = parseInt(document.getElementById('sets').value);
+
+      for (let i = 1; i <= sets; i++) {
+        const fieldset = document.createElement('div');
+        fieldset.className = 'input-set';
+        fieldset.innerHTML = `
+          <h3 style="margin-top:0; color:#2e7d32;">Lot No. ${i}</h3>
+          <label>Number of Carats:</label>
+          <input type="number" class="boxes" required>
+          <label>Weight of Mango (kgs):</label>
+          <input type="number" class="weight" required>
+          <label>Rate per Kg:</label>
+          <input type="number" class="price" required>
+        `;
+        form.appendChild(fieldset);
+      }
+      document.getElementById('advanceSection').style.display = 'block';
+      document.getElementById('result').innerHTML = '';
+    }
+
+    function calculateRevenue() {
+      const boxes = document.querySelectorAll('.boxes');
+      const weights = document.querySelectorAll('.weight');
+      const prices = document.querySelectorAll('.price');
+      const advance = parseFloat(document.getElementById('advance').value);
+
+      let totalRevenue = 0;
+      let totalBoxes = 0;
+      let output = '';
+
+      for (let i = 0; i < boxes.length; i++) {
+        const b = parseFloat(boxes[i].value);
+        const w = parseFloat(weights[i].value);
+        const p = parseFloat(prices[i].value);
+
+        let boxWeight = b * 2;
+        let reducedWeight = w - boxWeight;
+        let loss = Math.floor(reducedWeight * 0.05);
+        let finalWeight = reducedWeight - loss;
+        let revenue = finalWeight * p;
+
+        output += `
+          <div class="input-set">
+            <h3>Lot No. ${i + 1}</h3>
+            Total Weight: ${w} kg<br>
+            Total Carat Weight: ${boxWeight} kg<br>
+            Weight left: ${reducedWeight} kg<br>
+            5% Loss: ${loss} kg<br>
+            Net Weight: ${finalWeight} kg<br>
+            Rate per Kg: Rs. ${p}<br>
+            <strong>Revenue: Rs. ${revenue.toFixed(2)}</strong><br>
+          </div><br>`;
+
+        totalRevenue += revenue;
+        totalBoxes += b;
+      }
+
+      let pl = totalBoxes * 5;
+      let br = totalBoxes * 5;
+      let cmn = Math.floor(totalRevenue * 0.07);
+      let rp = 5;
+      let grandTotal = totalRevenue + advance + pl + br + cmn + rp;
+
+      output += `
+        <div class="result">
+          <strong>Total Revenue:</strong> Rs. ${totalRevenue.toFixed(2)}</strong><br>
+          <strong>Commission:</strong> Rs. ${cmn}<br>
+          <strong>Palledari:</strong> Rs. ${pl}<br>
+          <strong>Baardana:</strong> Rs. ${br}<br>
+          <strong>Advance:</strong> Rs. ${advance}<br>
+          <strong>Receipt:</strong> Rs. ${rp}<br>
+        </div>
+        <div class="grand-total-box">
+          Grand Total: Rs. ${grandTotal.toFixed(2)}
+        </div>
+      `;
+
+      document.getElementById('result').innerHTML = output;
+    }
+  </script>
+</body>
+</html>
