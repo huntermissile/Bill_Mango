@@ -3,203 +3,269 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mango Role Revenue Calculator</title>
+  <title>Mango Revenue Calculator</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #fefcea, #f1da36);
+      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      color: #333;
+      padding: 20px;
+      background: linear-gradient(to bottom right, #fff7d1, #ffe58f);
     }
     .container {
-      max-width: 90%;
-      width: 700px;
-      margin: 40px auto;
-      background-color: #fff8dc;
-      padding: 30px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      border-radius: 16px;
+      max-width: 1000px;
+      margin: auto;
+      background: #fffdf2;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.1);
     }
-    h1, h2 {
+    h1 {
       text-align: center;
-      color: #f57f17;
+      color: #e0a800;
     }
     label {
       display: block;
-      margin-top: 15px;
+      margin: 10px 0 5px;
       font-weight: bold;
     }
     input, select, button {
       width: 100%;
-      padding: 14px;
-      margin-top: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 10px;
-      font-size: 16px;
     }
-    button {
-      background-color: #f9a825;
-      color: white;
-      border: none;
-      margin-top: 20px;
-      font-weight: bold;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    button:hover {
-      background-color: #f57f17;
-      transform: scale(1.03);
-    }
-    .result, .input-set, .grand-total-box {
-      margin-top: 30px;
-      padding: 20px;
+    .lot-group {
+      margin-bottom: 20px;
+      border: 2px solid #ffcc00;
+      padding: 15px;
       border-radius: 12px;
-      background-color: #fffde7;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      background: #fff8e1;
     }
-    .grand-total-box {
-      background-color: #f1f8e9;
-      border: 2px dashed #388e3c;
-      text-align: center;
+
+    .lot-results {
+      margin-top: 25px;
+      padding: 20px;
+      background: #fff3cd;
+      border-radius: 12px;
+      box-shadow: inset 0 0 5px #ffd54f;
+    }
+
+    .lot-results .lot-title {
+      font-size: 22px;
       font-weight: bold;
+      color: #6d4c41;
+      margin-bottom: 10px;
+    }
+
+    .lot-results .result-item {
+      font-size: 16px;
+      margin: 4px 0;
+    }
+
+    .lot-results .result-label {
+      font-weight: bold;
+    }
+
+    .total-revenue {
+      margin-top: 30px;
+      background: #ffecb3;
+      padding: 20px;
+      border-left: 5px solid #ffca28;
+      border-radius: 12px;
+      font-weight: bold;
+      white-space: pre-wrap;
+      line-height: 1.9em;
+    }
+
+    .expense-details {
+      margin-top: 30px;
+      background: #fff1c1;
+      border-left: 5px solid #fbc02d;
+      font-weight: normal;
+      font-size: 18px;
+      border-radius: 12px;
+      padding: 20px;
+      line-height: 1.4em;
+    }
+
+    .expense-details-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .expense-details strong {
+      font-weight: bold;
+    }
+
+    .grand-total {
+      margin-top: 20px;
+      background: #f57f17;
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
       font-size: 20px;
-      color: #1b5e20;
+      font-weight: bold;
+      text-align: left;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      white-space: pre-wrap;
+      line-height: 2em;
     }
+
     @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-        margin: 20px;
-      }
-      h1 {
-        font-size: 22px;
-      }
-    }
-    @media print {
-      input, button, select, #advanceSection, .container > h1 {
-        display: none !important;
+      input, select, button {
+        font-size: 14px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Mango Revenue Estimator</h1>
-    <label for="role">Select Your Role:</label>
-    <select id="role">
+    <h1>Mango Revenue Calculator</h1>
+
+    <label for="role">Select Role:</label>
+    <select id="role" onchange="generateLotInputs()">
       <option value="farmer">Farmer</option>
       <option value="vyapari">Vyapari</option>
     </select>
-    <label for="lots">Number of Lots:</label>
-    <input type="number" id="lots" min="1">
-    <button onclick="generateInputs()">Generate Lot Inputs</button>
-    <form id="lotInputs"></form>
-    <div id="advanceSection" style="display:none">
-      <label for="advance">Advance:</label>
-      <input type="number" id="advance" value="0">
-      <label for="baardana">Include Baardana (Farmer Only)</label>
-      <select id="baardana">
-        <option value="1">Yes</option>
-        <option value="0">No</option>
-      </select>
-      <button onclick="calculateRevenue()">Calculate Revenue</button>
-    </div>
-    <div id="result"></div>
+
+    <label for="numLots">Number of Lots:</label>
+    <input type="number" id="numLots" min="1" />
+
+    <button onclick="generateLotInputs()">Add Lot Inputs</button>
+    <div id="lotsContainer"></div>
+
+    <div id="additionalInputs"></div>
+    <button onclick="calculateRevenue()">Calculate</button>
+
+    <div id="output"></div>
   </div>
+
   <script>
-    function generateInputs() {
-      const form = document.getElementById('lotInputs');
-      form.innerHTML = '';
-      const lots = parseInt(document.getElementById('lots').value);
-      for (let i = 1; i <= lots; i++) {
-        const field = document.createElement('div');
-        field.className = 'input-set';
-        field.innerHTML = `
-          <h3 style="color:#f57f17;">Lot No. ${i}</h3>
-          <label>Number of Carats:</label>
-          <input type="number" class="boxes" required>
-          <label>Weight of Mango (kgs):</label>
-          <input type="number" class="weight" required>
-          <label>Rate per Kg:</label>
-          <input type="number" class="price" required>
+    function generateLotInputs() {
+      const n = +document.getElementById('numLots').value;
+      const container = document.getElementById('lotsContainer');
+      container.innerHTML = '';
+      for (let i = 0; i < n; i++) {
+        container.innerHTML += `
+          <div class="lot-group">
+            <h3>Lot ${i + 1}</h3>
+            <label>Carats:</label>
+            <input type="number" class="carats" min="0" />
+            <label>Weight (kg):</label>
+            <input type="number" class="weights" min="0" step="0.01" />
+            <label>Rate per kg:</label>
+            <input type="number" class="rates" min="0" />
+          </div>
         `;
-        form.appendChild(field);
       }
-      document.getElementById('advanceSection').style.display = 'block';
-      document.getElementById('result').innerHTML = '';
+
+      const role = document.getElementById('role').value;
+      const additional = document.getElementById('additionalInputs');
+      if (role === 'farmer') {
+        additional.innerHTML = `
+          <label>Include Baardana?</label>
+          <select id="baardana">
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+          <label>Advance:</label>
+          <input type="number" id="advance" min="0" />
+        `;
+      } else {
+        additional.innerHTML = `
+          <label>Include Palledari?</label>
+          <select id="palledari">
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        `;
+      }
     }
 
     function calculateRevenue() {
       const role = document.getElementById('role').value;
-      const includeBaardana = parseInt(document.getElementById('baardana').value);
-      const boxes = document.querySelectorAll('.boxes');
-      const weights = document.querySelectorAll('.weight');
-      const prices = document.querySelectorAll('.price');
-      const advance = parseFloat(document.getElementById('advance').value);
+      const carats = Array.from(document.querySelectorAll('.carats')).map(el => +el.value);
+      const weights = Array.from(document.querySelectorAll('.weights')).map(el => +el.value);
+      const rates = Array.from(document.querySelectorAll('.rates')).map(el => +el.value);
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = '';
 
-      let totalRevenue = 0;
-      let totalBoxes = 0;
-      let resultHTML = '';
+      let totalBoxes = 0, totalRevenue = 0;
 
-      for (let i = 0; i < boxes.length; i++) {
-        const b = parseFloat(boxes[i].value);
-        const w = parseFloat(weights[i].value);
-        const p = parseFloat(prices[i].value);
-        const boxWeight = b * 2;
-        const reducedWeight = w - boxWeight;
-        const rawLoss = reducedWeight * 0.05;
-        let loss = Math.floor(rawLoss);
-        if (role === 'farmer') {
-          const decimal = rawLoss - Math.floor(rawLoss);
-          if (decimal > 0.7) loss = Math.ceil(rawLoss);
-        }
-        const finalWeight = reducedWeight - loss;
-        const revenue = finalWeight * p;
-
-        resultHTML += `
-          <div class="input-set">
-            <h3>Lot No. ${i + 1}</h3>
-            Total Weight: ${w} kg<br>
-            Total Carat Weight: ${boxWeight} kg<br>
-            Weight left: ${reducedWeight} kg<br>
-            5% Loss: ${loss} kg<br>
-            Net Weight: ${finalWeight} kg<br>
-            Rate per Kg: Rs. ${p}<br>
-            <strong>Revenue: Rs. ${revenue.toFixed(2)}</strong>
-          </div>`;
-
+      for (let i = 0; i < carats.length; i++) {
+        const boxWeight = carats[i] * 2;
+        const weightLeft = weights[i] - boxWeight;
+        let loss = weightLeft * 0.05;
+        loss = role === 'farmer' ? (loss - Math.floor(loss) > 0.7 ? Math.ceil(loss) : Math.floor(loss)) : Math.floor(loss);
+        const netWeight = weightLeft - loss;
+        const revenue = netWeight * rates[i];
+        totalBoxes += carats[i];
         totalRevenue += revenue;
-        totalBoxes += b;
+
+        const lotResult = document.createElement('div');
+        lotResult.className = 'lot-results';
+        lotResult.innerHTML = `
+          <div class="lot-title">Lot ${i + 1} Results</div>
+          <div class="result-item"><span class="result-label">Total Carat Weight:</span> ${boxWeight} kg</div>
+          <div class="result-item"><span class="result-label">Weight Left:</span> ${weightLeft.toFixed(2)} kg</div>
+          <div class="result-item"><span class="result-label">Loss:</span> ${loss.toFixed(2)} kg</div>
+          <div class="result-item"><span class="result-label">Net Weight:</span> ${netWeight.toFixed(2)} kg</div>
+          <div class="result-item"><span class="result-label">Revenue:</span> Rs. ${revenue.toFixed(2)}</div>
+        `;
+        outputDiv.appendChild(lotResult);
       }
 
       const cmn = Math.floor(totalRevenue * 0.07);
-      const pl = totalBoxes * 5;
-      const br = (role === 'farmer' && includeBaardana === 1) ? totalBoxes * 5 : 0;
-      const rp = 5;
-      let grandTotal, expense = 0;
+      const totalSummary = document.createElement('div');
+      totalSummary.className = 'total-revenue';
+      totalSummary.innerText = `Total Revenue: Rs. ${totalRevenue.toFixed(2)}\nCommission: Rs. ${cmn}`;
+      outputDiv.appendChild(totalSummary);
+
+      const expenseBox = document.createElement('div');
+      expenseBox.className = 'expense-details';
+
+      const grandBox = document.createElement('div');
+      grandBox.className = 'grand-total';
 
       if (role === 'farmer') {
-        expense = advance + pl + br + cmn + rp;
-        grandTotal = totalRevenue - expense;
+        const br = document.getElementById('baardana').value == '1' ? totalBoxes * 5 : 0;
+        const adv = +document.getElementById('advance').value;
+        const pl = totalBoxes * 5;
+        const rp = 5;
+        const expense = adv + pl + br + cmn + rp;
+        const grandTotal = totalRevenue - expense;
+
+        expenseBox.innerHTML = `
+          <div class="expense-details-title">Expense Details:</div>
+          <strong>Palledari:</strong> Rs. ${pl}<br>
+          <strong>Baardana:</strong> Rs. ${br}<br>
+          <strong>Advance:</strong> Rs. ${adv}<br>
+          <strong>Receipt:</strong> Rs. ${rp}<br>
+          <strong>Commission:</strong> Rs. ${cmn}<br>
+          <strong>Total Expense:</strong> Rs. ${expense}`;
+        grandBox.innerText = `Grand Total: Rs. ${grandTotal}`;
       } else {
-        grandTotal = totalRevenue + pl + cmn + 10;
+        const pl = document.getElementById('palledari').value == '1' ? totalBoxes * 5 : 0;
+        const receipt = 10;
+        const expense = cmn + pl + receipt;
+        const grandTotal = totalRevenue + cmn + pl + receipt;
+
+        expenseBox.innerHTML = `
+          <div class="expense-details-title">Expense Details:</div>
+          <strong>Palledari:</strong> Rs. ${pl}<br>
+          <strong>Receipt:</strong> Rs. ${receipt}<br>
+          <strong>Commission:</strong> Rs. ${cmn}<br>
+          <strong>Total Expense:</strong> Rs. ${expense}`;
+        grandBox.innerText = `Grand Total: Rs. ${grandTotal}`;
       }
 
-      resultHTML += `
-        <div class="result">
-          <strong>Total Revenue:</strong> Rs. ${totalRevenue.toFixed(2)}<br>
-          <strong>Commission:</strong> Rs. ${cmn}<br>
-          <strong>Palledari:</strong> Rs. ${pl}<br>
-          ${role === 'farmer' ? `<strong>Baardana:</strong> Rs. ${br}<br>` : ''}
-          ${role === 'farmer' ? `<strong>Advance:</strong> Rs. ${advance}<br>` : ''}
-          ${role === 'farmer' ? `<strong>Receipt:</strong> Rs. ${rp}<br>` : '<strong>Fixed Addition:</strong> Rs. 10<br>'}
-          ${role === 'farmer' ? `<strong>Expense:</strong> Rs. ${expense}<br>` : ''}
-        </div>
-        <div class="grand-total-box">
-          Grand Total: Rs. ${grandTotal.toFixed(2)}
-        </div>
-      `;
-
-      document.getElementById('result').innerHTML = resultHTML;
+      outputDiv.appendChild(expenseBox);
+      outputDiv.appendChild(grandBox);
     }
   </script>
 </body>
